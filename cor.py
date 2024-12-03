@@ -3,13 +3,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Load your dataset
+
 dataset = pd.read_csv("MetaData-Modfied.csv")
-
-# Shuffle the dataset
 dataset = dataset.sample(frac=1).reset_index(drop=True)
-
-# Select the columns for analysis (same as in your previous code)
 columns = [
     'Lessthnhighschool18to24', 'Highschoolgraduate18to24',
     'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
@@ -25,26 +21,17 @@ columns = [
     'Distance_To_Police'
 ]
 
-# Extract the relevant data columns
 data = dataset[columns]
-
-# Clean the data
-data = data.replace({',': ''}, regex=True)  # Remove commas
-data = data.replace('-', np.nan)  # Replace '-' with NaN
-data.replace('3500+', 3500, inplace=True)  # Replace '3500+' with 3500
-
-# Ensure that the data remains as a pandas DataFrame
-data = data.apply(pd.to_numeric, errors='coerce')  # Convert to numeric, handling errors as NaN
-
-# Calculate the correlation matrix
+data = data.replace({',': ''}, regex=True) 
+data = data.replace('-', np.nan)  
+data.replace('3500+', 3500, inplace=True)  
+data = data.apply(pd.to_numeric, errors='coerce')  
 corr_matrix = data.corr()
-
-# Set up the matplotlib figure
 plt.figure(figsize=(12, 10))
-
-# Create the heatmap using seaborn
 sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', linewidths=0.5)
-
-# Show the heatmap
 plt.title("Correlation Matrix Heatmap")
 plt.show()
+
+
+
+

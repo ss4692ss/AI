@@ -1,27 +1,17 @@
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import KFold
-from sklearn import metrics
 
-def run_kfold(machine, data, target, n, continuous):
-  kfold_object = KFold(n_splits=n)
-  kfold_object.get_n_splits(data)
-  
-  all_return_values = []
-  i=0
-  for train_index, test_index in kfold_object.split(data):
-    i=i+1
-    data_train = data[train_index]
-    target_train = target[train_index]
-    data_test = data[test_index]
-    target_test = target[test_index]
-
-    machine.fit(data_train, target_train)
-    prediction = machine.predict(data_test)
-    
-    if (continuous==True):
-      r2 = metrics.r2_score(target_test, prediction)
-      all_return_values.append(r2)
-    else:
-      accuracy_score = metrics.accuracy_score(target_test, prediction)  
-      all_return_values.append(accuracy_score)
-      confusion_matrix = metrics.confusion_matrix(target_test, prediction)
-  return all_return_values
+def run_kfold(model, data, target, k=4, verbose=False):
+    kf = KFold(n_splits=k, shuffle=True, random_state=42)
+    scores = []
+    for train_idx, test_idx in kf.split(data):
+        X_train, X_test = data[train_idx], data[test_idx]
+        y_train, y_test = target[train_idx], target[test_idx]
+        
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        scores.append(accuracy)
+        if verbose:
+            print(f"Fold Accuracy: {accuracy}")
+    return scores

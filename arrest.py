@@ -1,20 +1,17 @@
-import pandas
-import kfold_template
-import numpy as np
-
-from sklearn import tree
-from sklearn.ensemble import RandomForestClassifier
-
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+import kfold_template
 
-dataset = pandas.read_csv("MetaData-Modfied.csv")
+# Load and shuffle dataset
+dataset = pd.read_csv("MetaData-Modfied.csv")
+dataset = dataset.sample(frac=1).reset_index(drop=True)
 
-dataset = dataset.sample(frac=1).reset_index()
+# Extract target variable
+target = dataset["TotalCase"].astype(float).values  # Ensure target is numeric
 
-target = dataset["Offense"].values
+# Specify feature columns
 columns = [
     'Lessthnhighschool18to24', 'Highschoolgraduate18to24',
     'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
@@ -30,53 +27,42 @@ columns = [
     'Distance_To_Police'
 ]
 
+# Extract feature data
 data = dataset[columns]
 
-data = data.replace({',': ''}, regex=True)
-data = data.replace('-', np.nan)  
-data.replace('3500+', 3500, inplace=True)
+# Clean data
+data = data.replace({',': ''}, regex=True)  # Remove commas
+data = data.replace('-', np.nan)           # Replace dashes with NaN
+data = data.replace('3500+', 3500)         # Handle specific string
+data = data.astype(float)                  # Convert all to float
 
-feature_list = data.columns
-data = data.values
+# Handle missing values (optional: impute or drop rows/columns)
+data = data.fillna(data.mean())            # Replace NaN with column means
 
-print(feature_list)
-print(target)
-print(data)
+# Scale features
+scaler = StandardScaler()
+data = scaler.fit_transform(data)
 
-machine = RandomForestClassifier(criterion="gini", max_depth=2, n_estimators=100, bootstrap = True) 
-return_values = kfold_template.run_kfold(machine, data, target, 4, True)
-print(return_values)
+# Train RandomForestClassifier with k-fold validation
+model = RandomForestClassifier(criterion="gini", max_depth=2, n_estimators=100, bootstrap=True)
+return_values = kfold_template.run_kfold(model, data, target, 4, True)
 
+# Print k-fold results
+average_value = sum(return_values) / len(return_values)
+print("Average of return values:", average_value)
 
-machine = RandomForestClassifier(criterion="gini", max_depth=2, n_estimators=100, bootstrap = True) 
-machine.fit(data, target)
-feature_importances_raw = machine.feature_importances_
-print(feature_importances_raw)
-print(feature_list)
+# Train on full data and compute feature importance
+model.fit(data, target)
+feature_importances_raw = model.feature_importances_
 
-feature_zip = zip(feature_list, feature_importances_raw)
-print(feature_zip)
+# Match feature names to their importances
+feature_zip = zip(columns, feature_importances_raw)
+feature_importances = sorted([(f, round(i, 4)) for f, i in feature_zip], key=lambda x: x[1], reverse=True)
 
-feature_importances = [ (feature, round(importance, 4)) for feature, importance in feature_zip]
-feature_importances = sorted(feature_importances, key = lambda x: x[1] )
-print(feature_importances)
-[ print('{:14}: {}'.format(*feature_importance)) for feature_importance in feature_importances]
+# Display feature importances
+print("Feature Importances:")
+[print(f"{feature:30}: {importance}") for feature, importance in feature_importances]
 
-
-data = data.apply(pd.to_numeric, errors='coerce')
-
-# Calculate the correlation matrix
-corr_matrix = data.corr()
-
-# Set up the matplotlib figure
-plt.figure(figsize=(12, 10))
-
-# Create the heatmap using seaborn
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
-
-# Show the heatmap
-plt.title("Correlation Matrix Heatmap")
-plt.show()
 
 
 # County Tracts,TRACTCE20,Animal,Dockless_vehicle,Graffiti,
