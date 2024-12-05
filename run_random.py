@@ -10,21 +10,24 @@ data = pd.read_csv('MetaData-Modfied.csv')
 
 # Select features and target variable
 X = data[
-    [
-        'Lessthnhighschool18to24', 'Highschoolgraduate18to24',
-        'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
-        'Lessthan9thgrade', '9thto12thgradenodiploma', 'Highschoolgraduate',
-        'Somecollegenodegree', 'Associatedegree', 'Bachelordegree',
-        'Graduateprofessionaldegree', 'Highschoolgraduatehigher',
-        'Totalhousingunits', 'UnemploymentrateofPopulation16yearsandover',
-        'Hispanic', 'White', 'Black', 'AmericanIndianandAlaskaNativealone',
-        'Asianalone', 'NativeHawaiian', 'other', 'Under5years', '5to9years',
-        '10to14years', '15to19years', '20to24years', '25to34years',
-        '35to44years', '45to54years', '55to59years', '60to64years',
-        '65to74years', '75to84years', '85yearsandover', 'Medianage'
+    ['Lessthnhighschool18to24', 'Highschoolgraduate18to24',
+    'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
+    'Lessthan9thgrade', '9thto12thgradenodiploma', 'Highschoolgraduate',
+    'Somecollegenodegree', 'Associatedegree', 'Bachelordegree',
+    'Graduateprofessionaldegree', 'Highschoolgraduatehigher',
+    'Totalhousingunits', 'UnemploymentrateofPopulation16yearsandover',
+    'Hispanic', 'White', 'Black', 'AmericanIndianandAlaskaNativealone',
+    'Asianalone', 'NativeHawaiian', 'other', 'Under5years', '5to9years',
+    '10to14years', '15to19years', '20to24years', '25to34years',
+    '35to44years', '45to54years', '55to59years', '60to64years',
+    '65to74years', '75to84years', '85yearsandover', 'Medianage',
+    'Distance_To_Police', 'Total', 'Nobedroom', '1bedroom', '2bedrooms', '3bedrooms', '4bedrooms', 'Owner'
     ]
 ]
-y = data['TotalCase']
+
+y = data['Information']
+scaler_y = StandardScaler()
+y = scaler_y.fit_transform(y.values.reshape(-1, 1)).ravel()
 
 # Handle missing data
 X = X.replace({',': ''}, regex=True)
@@ -54,33 +57,40 @@ r2 = r2_score(y_test, y_pred)
 print(f"Mean Squared Error: {mse}")
 print(f"R-squared Score: {r2}")
 
-# Feature importances with corrected column names
-importances = model.feature_importances_
-feature_importances = pd.DataFrame({
-    'Feature': data[
-        [
-            'Lessthnhighschool18to24', 'Highschoolgraduate18to24',
-            'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
-            'Lessthan9thgrade', '9thto12thgradenodiploma', 'Highschoolgraduate',
-            'Somecollegenodegree', 'Associatedegree', 'Bachelordegree',
-            'Graduateprofessionaldegree', 'Highschoolgraduatehigher',
-            'Totalhousingunits', 'UnemploymentrateofPopulation16yearsandover',
-            'Hispanic', 'White', 'Black', 'AmericanIndianandAlaskaNativealone',
-            'Asianalone', 'NativeHawaiian', 'other', 'Under5years', '5to9years',
-            '10to14years', '15to19years', '20to24years', '25to34years',
-            '35to44years', '45to54years', '55to59years', '60to64years',
-            '65to74years', '75to84years', '85yearsandover', 'Medianage'
-        ]
-    ].columns,
-    'Importance': importances
-})
+# # # Feature importances with corrected column names
+# # importances = model.feature_importances_
+# # feature_importances = pd.DataFrame({
+# #     'Feature': data['Lessthnhighschool18to24', 'Highschoolgraduate18to24',
+#     'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
+#     'Lessthan9thgrade', '9thto12thgradenodiploma', 'Highschoolgraduate',
+#     'Somecollegenodegree', 'Associatedegree', 'Bachelordegree',
+#     'Graduateprofessionaldegree', 'Highschoolgraduatehigher',
+#     'Totalhousingunits', 'UnemploymentrateofPopulation16yearsandover',
+#     'Hispanic', 'White', 'Black', 'AmericanIndianandAlaskaNativealone',
+#     'Asianalone', 'NativeHawaiian', 'other', 'Under5years', '5to9years',
+#     '10to14years', '15to19years', '20to24years', '25to34years',
+#     '35to44years', '45to54years', '55to59years', '60to64years',
+#     '65to74years', '75to84years', '85yearsandover', 'Medianage',
+#     'Distance_To_Police', 'Total', 'Nobedroom', '1bedroom', '2bedrooms', '3bedrooms', '4bedrooms', 'Owner'
+# #     [
+    
+# #     ]
+# #     ].columns,
+# #     'Importance': importances
+# # })
 
-feature_importances = feature_importances.sort_values(by='Importance', ascending=False)
+# # feature_importances = feature_importances.sort_values(by='Importance', ascending=False)
 
-print("Feature Importances:")
-print(feature_importances)
+# # print("Feature Importances:")
+# print(feature_importances)
 
-
+##Highschoolgraduate18to24',
+    ##'Lessthan9thgrade',  'Highschoolgraduate','Bachelordegree',
+    ##'Graduateprofessionaldegree',
+    ##'Hispanic', 'White', 
+    
+    ##'65to74years',
+    ##'Distance_To_Police', 'Total', 'Nobedroom', '1bedroom', '2bedrooms', '3bedrooms', '4bedrooms', 'Owner',
 
 
 

@@ -4,14 +4,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 import kfold_template
 
-# Load and shuffle dataset
+
 dataset = pd.read_csv("MetaData-Modfied.csv")
 dataset = dataset.sample(frac=1).reset_index(drop=True)
 
-# Extract target variable
-target = dataset["TotalCase"].astype(float).values  # Ensure target is numeric
 
-# Specify feature columns
+target = dataset["TotalCase"].astype(float).values
+
+
 columns = [
     'Lessthnhighschool18to24', 'Highschoolgraduate18to24',
     'Somecollegeorassociatedegree18to24', 'Bachelordegreeorhigher18to24',
@@ -27,27 +27,27 @@ columns = [
     'Distance_To_Police'
 ]
 
-# Extract feature data
+
 data = dataset[columns]
 
-# Clean data
-data = data.replace({',': ''}, regex=True)  # Remove commas
-data = data.replace('-', np.nan)           # Replace dashes with NaN
-data = data.replace('3500+', 3500)         # Handle specific string
-data = data.astype(float)                  # Convert all to float
 
-# Handle missing values (optional: impute or drop rows/columns)
-data = data.fillna(data.mean())            # Replace NaN with column means
+data = data.replace({',': ''}, regex=True) 
+data = data.replace('-', np.nan)           
+data = data.replace('3500+', 3500)         
+data = data.astype(float)                 
 
-# Scale features
+
+data = data.fillna(data.mean())            
+
+
 scaler = StandardScaler()
 data = scaler.fit_transform(data)
 
-# Train RandomForestClassifier with k-fold validation
+
 model = RandomForestClassifier(criterion="gini", max_depth=2, n_estimators=100, bootstrap=True)
 return_values = kfold_template.run_kfold(model, data, target, 4, True)
 
-# Print k-fold results
+
 average_value = sum(return_values) / len(return_values)
 print("Average of return values:", average_value)
 

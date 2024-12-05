@@ -25,7 +25,7 @@ X = data[
         '65to74years', '75to84years', '85yearsandover', 'Medianage'
     ]
 ]
-y = data['Arrest']
+y = data['TotalCase']
 scaler_y = StandardScaler()
 y = scaler_y.fit_transform(y.values.reshape(-1, 1)).ravel()
 
